@@ -1,0 +1,63 @@
+{
+    "foreign_export_ports": [
+        {
+            "port_name": "Gladstone Port (RG Tanna Coal Terminal)",
+            "country": "Australia",
+            "max_draft_meters": 15.0,
+            "max_loa_meters": 300,
+            "allowed_vessel_classes": [
+                "Panamax",
+                "Capesize"
+            ],
+            "notes": "Australia's major coking coal export hub on the East Coast.",
+            "_source_link": "https://www.gpcl.com.au"
+        },
+        {
+            "port_name": "Dalrymple Bay Coal Terminal (DBCT)",
+            "country": "Australia",
+            "max_draft_meters": 17.2,
+            "max_loa_meters": 300,
+            "allowed_vessel_classes": [
+                "Capesize",
+                "Panamax"
+            ],
+            "notes": "World's largest export metallurgical coal facility.",
+            "_source_link": "https://dbinfrastructure.com.au"
+        },
+        {
+            "port_name": "Taboneo Anchorage / Banjarmasin",
+            "country": "Indonesia",
+            "max_draft_meters": 10.5,
+            "max_loa_meters": 230,
+            "allowed_vessel_classes": [
+                "Handysize",
+                "Supramax"
+            ],
+            "notes": "Key Indonesian offshore loading point; heavily impacted by seasonal river drafts.",
+            "_source_link": "https://www.dephub.go.id"
+        },
+        {
+            "port_name": "Hay Point Coal Terminal",
+            "country": "Australia",
+            "max_draft_meters": 16.0,
+            "max_loa_meters": 300,
+            "allowed_vessel_classes": [
+                "Capesize",
+                "Panamax"
+            ],
+            "notes": "Deepwater offshore-jetty loading facility for prime hard coking coal.",
+            "_source_link": "https://www.dalrymplebaycoal.com.au"
+        },
+        {
+            "port_name": "Port Ridley (Abbots Point / North Queensland)",
+            "country": "Australia",
+            "max_draft_meters": 19.0,
+            "max_loa_meters": 320,
+            "allowed_vessel_classes": [
+                "Capesize"
+            ],
+            "notes": "Deepest northern export terminal handling ultra-large bulk carriers.",
+            "_source_link": "https://nqbp.com.au"
+        }
+    ]
+}

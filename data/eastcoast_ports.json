@@ -1,0 +1,37 @@
+{
+  "east_coast_ports": [
+    {
+      "port_name": "Haldia Dock Complex",
+      "max_draft_meters": 13.0,
+      "max_loa_meters": 230,
+      "allowed_vessel_classes": [
+        "Handysize",
+        "Supramax"
+      ],
+      "notes": "Tidal restrictions apply on the Hooghly River channel.",
+      "_source_link": "https://mopsw.nic.in/sagarvidyakosh/index.php?title=Haldia_Dock_Complex"
+    },
+    {
+      "port_name": "Paradip Port",
+      "max_draft_meters": 16.5,
+      "max_loa_meters": 300,
+      "allowed_vessel_classes": [
+        "Panamax",
+        "Capesize"
+      ],
+      "notes": "Handles up to Capesize vessels under favorable conditions.",
+      "_source_link": "https://paradipport.gov.in/berth-specifications"
+    },
+    {
+      "port_name": "Visakhapatnam Port",
+      "max_draft_meters": 18.0,
+      "max_loa_meters": 300,
+      "allowed_vessel_classes": [
+        "Capesize",
+        "Panamax"
+      ],
+      "notes": "Deep-water outer harbour berths handle large Capesize bulk carriers.",
+      "_source_link": "https://vpt.shipping.gov.in"
+    }
+  ]
+}

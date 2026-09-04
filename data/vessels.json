@@ -1,0 +1,36 @@
+{
+    "vessel_classes": [
+        {
+            "class_name": "Handysize",
+            "typical_dwt_capacity_mt": 35000,
+            "max_draft_meters": 10.0,
+            "max_loa_meters": 180,
+            "fuel_consumption_tons_day": 22.0,
+            "baseline_daily_hire_usd": 12000
+        },
+        {
+            "class_name": "Supramax",
+            "typical_dwt_capacity_mt": 58000,
+            "max_draft_meters": 12.8,
+            "max_loa_meters": 200,
+            "fuel_consumption_tons_day": 28.0,
+            "baseline_daily_hire_usd": 15000
+        },
+        {
+            "class_name": "Panamax",
+            "typical_dwt_capacity_mt": 75000,
+            "max_draft_meters": 14.5,
+            "max_loa_meters": 225,
+            "fuel_consumption_tons_day": 32.0,
+            "baseline_daily_hire_usd": 18000
+        },
+        {
+            "class_name": "Capesize",
+            "typical_dwt_capacity_mt": 180000,
+            "max_draft_meters": 18.5,
+            "max_loa_meters": 290,
+            "fuel_consumption_tons_day": 42.0,
+            "baseline_daily_hire_usd": 24000
+        }
+    ]
+}

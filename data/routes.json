@@ -1,0 +1,95 @@
+{
+    "voyage_routes": [
+        {
+            "corridor": "Indonesia to East Coast India",
+            "routes": [
+                {
+                    "origin": "Taboneo Anchorage / Banjarmasin",
+                    "destination": "Haldia Dock Complex",
+                    "route_options": [
+                        {
+                            "route_name": "Standard Direct (Malacca Approach)",
+                            "distance_nm": 2300,
+                            "transit_days": 7.4,
+                            "chokepoint_lat": 5.5,
+                            "chokepoint_lon": 98.0
+                        },
+                        {
+                            "route_name": "Sunda Strait Deviation",
+                            "distance_nm": 2550,
+                            "transit_days": 8.2,
+                            "chokepoint_lat": -6.0,
+                            "chokepoint_lon": 105.8
+                        },
+                        {
+                            "route_name": "Deep-Water Lombok Evasion",
+                            "distance_nm": 3100,
+                            "transit_days": 9.9,
+                            "chokepoint_lat": -8.8,
+                            "chokepoint_lon": 115.8
+                        }
+                    ]
+                },
+                {
+                    "origin": "Taboneo Anchorage / Banjarmasin",
+                    "destination": "Paradip Port",
+                    "route_options": [
+                        {
+                            "route_name": "Standard Direct (Malacca Approach)",
+                            "distance_nm": 2100,
+                            "transit_days": 6.7,
+                            "chokepoint_lat": 5.5,
+                            "chokepoint_lon": 98.0
+                        },
+                        {
+                            "route_name": "Sunda Strait Deviation",
+                            "distance_nm": 2400,
+                            "transit_days": 7.7,
+                            "chokepoint_lat": -6.0,
+                            "chokepoint_lon": 105.8
+                        },
+                        {
+                            "route_name": "Deep-Water Lombok Evasion",
+                            "distance_nm": 2900,
+                            "transit_days": 9.3,
+                            "chokepoint_lat": -8.8,
+                            "chokepoint_lon": 115.8
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "corridor": "Australia to East Coast India",
+            "routes": [
+                {
+                    "origin": "Gladstone Port (RG Tanna Coal Terminal)",
+                    "destination": "Paradip Port",
+                    "route_options": [
+                        {
+                            "route_name": "Standard Route (via Torres Strait)",
+                            "distance_nm": 5000,
+                            "transit_days": 16.0,
+                            "chokepoint_lat": -10.5,
+                            "chokepoint_lon": 141.5
+                        },
+                        {
+                            "route_name": "Deep-Water Alternative (via Lombok Strait)",
+                            "distance_nm": 5300,
+                            "transit_days": 17.0,
+                            "chokepoint_lat": -8.8,
+                            "chokepoint_lon": 115.8
+                        },
+                        {
+                            "route_name": "Southern Ocean Evasion (Avoids Northern Cyclones)",
+                            "distance_nm": 5900,
+                            "transit_days": 18.9,
+                            "chokepoint_lat": -35.0,
+                            "chokepoint_lon": 115.0
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-intro">
+    <h1 style="color: var(--sail-blue); text-align: center;">SAIL Intelligent Freight Advisory Portal</h1>
+    <p style="text-align: center; color: #555; font-size: 1.1em;">Review the current maritime infrastructure data below.</p>
+    {% if not session.get('user_id') %}
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="{{ url_for('auth.login') }}" class="btn-primary" style="display: inline-block; width: auto; padding: 15px 40px; font-size: 1.1em; text-decoration: none; border-radius: 8px;">Login to Access Procurement Dashboard</a>
+        </div>
+    {% endif %}
+</div>
+
+<div class="infrastructure-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 40px;">
+    <!-- Indian Discharge Ports -->
+    <div class="data-section auth-card" style="margin: 0; max-width: none;">
+        <h2 style="border-bottom: 2px solid var(--sail-light-blue); padding-bottom: 10px;">Indian Discharge Ports</h2>
+        <div class="port-list">
+            {% for port in eastcoast_ports %}
+            <div class="data-card" style="border: 1px solid #eee; padding: 15px; margin-bottom: 15px; border-radius: 6px; background-color: #fafafa;">
+                <h3 style="margin-top: 0; color: var(--sail-blue);">{{ port.port_name }}</h3>
+                <p style="margin: 5px 0;"><strong>Max Draft:</strong> {{ port.max_draft_meters }}m</p>
+                <p style="margin: 5px 0;"><strong>Allowed Vessels:</strong> {{ port.allowed_vessel_classes | join(', ') }}</p>
+                <p style="font-size: 0.9em; color: #666; margin-top: 10px;">{{ port.notes }}</p>
+            </div>
+            {% else %}
+            <p>No port data available.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Foreign Export Ports -->
+    <div class="data-section auth-card" style="margin: 0; max-width: none;">
+        <h2 style="border-bottom: 2px solid var(--sail-light-blue); padding-bottom: 10px;">Foreign Export Ports</h2>
+        <div class="port-list">
+            {% for port in foreign_ports %}
+            <div class="data-card" style="border: 1px solid #eee; padding: 15px; margin-bottom: 15px; border-radius: 6px; background-color: #fafafa;">
+                <h3 style="margin-top: 0; color: var(--sail-blue);">{{ port.port_name }} ({{ port.country }})</h3>
+                <p style="margin: 5px 0;"><strong>Max Draft:</strong> {{ port.max_draft_meters }}m</p>
+                <p style="margin: 5px 0;"><strong>Allowed Vessels:</strong> {{ port.allowed_vessel_classes | join(', ') }}</p>
+                <p style="font-size: 0.9em; color: #666; margin-top: 10px;">{{ port.notes }}</p>
+            </div>
+            {% else %}
+            <p>No port data available.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Vessel Fleet -->
+    <div class="data-section auth-card" style="margin: 0; max-width: none;">
+        <h2 style="border-bottom: 2px solid var(--sail-light-blue); padding-bottom: 10px;">Vessel Fleet</h2>
+        <div class="vessel-list">
+            {% for vessel in vessels %}
+            <div class="data-card" style="border: 1px solid #eee; padding: 15px; margin-bottom: 15px; border-radius: 6px; background-color: #fafafa;">
+                <h3 style="margin-top: 0; color: var(--sail-blue);">{{ vessel.class_name }}</h3>
+                <p style="margin: 5px 0;"><strong>DWT Capacity:</strong> {{ "{:,.0f}".format(vessel.typical_dwt_capacity_mt) }} MT</p>
+                <p style="margin: 5px 0;"><strong>Max Draft:</strong> {{ vessel.max_draft_meters }}m</p>
+                <p style="margin: 5px 0;"><strong>Fuel Consumption:</strong> {{ vessel.fuel_consumption_tons_day }} tons/day</p>
+            </div>
+            {% else %}
+            <p>No vessel data available.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
