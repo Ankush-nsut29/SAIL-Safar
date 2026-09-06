@@ -25,6 +25,10 @@ def get_vessels():
     data = load_json_file('vessels.json')
     return data.get('vessel_classes', [])
 
+def get_routes():
+    data = load_json_file('routes.json')
+    return data.get('voyage_routes', [])
+
 def load_csv_as_dataframe(vessel_class):
     filepath = os.path.join(DATA_DIR, f'Cleaned_{vessel_class}.csv')
     try:

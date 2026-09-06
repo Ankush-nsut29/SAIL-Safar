@@ -3,6 +3,8 @@
         {
             "port_name": "Gladstone Port (RG Tanna Coal Terminal)",
             "country": "Australia",
+            "lat": -23.84,
+            "lng": 151.25,
             "max_draft_meters": 15.0,
             "max_loa_meters": 300,
             "allowed_vessel_classes": [
@@ -15,6 +17,8 @@
         {
             "port_name": "Dalrymple Bay Coal Terminal (DBCT)",
             "country": "Australia",
+            "lat": -21.26,
+            "lng": 149.30,
             "max_draft_meters": 17.2,
             "max_loa_meters": 300,
             "allowed_vessel_classes": [
@@ -27,6 +31,8 @@
         {
             "port_name": "Taboneo Anchorage / Banjarmasin",
             "country": "Indonesia",
+            "lat": -3.61,
+            "lng": 114.44,
             "max_draft_meters": 10.5,
             "max_loa_meters": 230,
             "allowed_vessel_classes": [
@@ -39,6 +45,8 @@
         {
             "port_name": "Hay Point Coal Terminal",
             "country": "Australia",
+            "lat": -21.27,
+            "lng": 149.30,
             "max_draft_meters": 16.0,
             "max_loa_meters": 300,
             "allowed_vessel_classes": [
@@ -51,6 +59,8 @@
         {
             "port_name": "Port Ridley (Abbots Point / North Queensland)",
             "country": "Australia",
+            "lat": -19.88,
+            "lng": 148.08,
             "max_draft_meters": 19.0,
             "max_loa_meters": 320,
             "allowed_vessel_classes": [

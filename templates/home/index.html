@@ -11,56 +11,83 @@
     {% endif %}
 </div>
 
-<div class="infrastructure-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 40px;">
+<div class="infrastructure-container" style="margin-top: 40px;">
     <!-- Indian Discharge Ports -->
-    <div class="data-section auth-card" style="margin: 0; max-width: none;">
-        <h2 style="border-bottom: 2px solid var(--sail-light-blue); padding-bottom: 10px;">Indian Discharge Ports</h2>
-        <div class="port-list">
-            {% for port in eastcoast_ports %}
-            <div class="data-card" style="border: 1px solid #eee; padding: 15px; margin-bottom: 15px; border-radius: 6px; background-color: #fafafa;">
-                <h3 style="margin-top: 0; color: var(--sail-blue);">{{ port.port_name }}</h3>
-                <p style="margin: 5px 0;"><strong>Max Draft:</strong> {{ port.max_draft_meters }}m</p>
-                <p style="margin: 5px 0;"><strong>Allowed Vessels:</strong> {{ port.allowed_vessel_classes | join(', ') }}</p>
-                <p style="font-size: 0.9em; color: #666; margin-top: 10px;">{{ port.notes }}</p>
-            </div>
-            {% else %}
-            <p>No port data available.</p>
-            {% endfor %}
+    <h2 class="section-header">Indian Discharge Ports</h2>
+    <div class="horizontal-card-grid">
+        {% for port in eastcoast_ports %}
+        <div class="premium-card">
+            <h3>{{ port.port_name }}</h3>
+            <p><span class="card-label">Max Draft:</span> <span class="card-value">{{ port.max_draft_meters }}m</span></p>
+            <p><span class="card-label">Allowed Vessels:</span> <span class="card-value">{{ port.allowed_vessel_classes | join(', ') }}</span></p>
+            <p style="font-size: 0.9em; color: var(--text-muted); margin-top: 15px;">{{ port.notes }}</p>
         </div>
+        {% else %}
+        <p>No port data available.</p>
+        {% endfor %}
     </div>
 
     <!-- Foreign Export Ports -->
-    <div class="data-section auth-card" style="margin: 0; max-width: none;">
-        <h2 style="border-bottom: 2px solid var(--sail-light-blue); padding-bottom: 10px;">Foreign Export Ports</h2>
-        <div class="port-list">
-            {% for port in foreign_ports %}
-            <div class="data-card" style="border: 1px solid #eee; padding: 15px; margin-bottom: 15px; border-radius: 6px; background-color: #fafafa;">
-                <h3 style="margin-top: 0; color: var(--sail-blue);">{{ port.port_name }} ({{ port.country }})</h3>
-                <p style="margin: 5px 0;"><strong>Max Draft:</strong> {{ port.max_draft_meters }}m</p>
-                <p style="margin: 5px 0;"><strong>Allowed Vessels:</strong> {{ port.allowed_vessel_classes | join(', ') }}</p>
-                <p style="font-size: 0.9em; color: #666; margin-top: 10px;">{{ port.notes }}</p>
-            </div>
-            {% else %}
-            <p>No port data available.</p>
-            {% endfor %}
+    <h2 class="section-header">Foreign Export Ports</h2>
+    <div class="horizontal-card-grid">
+        {% for port in foreign_ports %}
+        <div class="premium-card">
+            <h3>{{ port.port_name }} ({{ port.country }})</h3>
+            <p><span class="card-label">Max Draft:</span> <span class="card-value">{{ port.max_draft_meters }}m</span></p>
+            <p><span class="card-label">Allowed Vessels:</span> <span class="card-value">{{ port.allowed_vessel_classes | join(', ') }}</span></p>
+            <p style="font-size: 0.9em; color: var(--text-muted); margin-top: 15px;">{{ port.notes }}</p>
         </div>
+        {% else %}
+        <p>No port data available.</p>
+        {% endfor %}
     </div>
 
     <!-- Vessel Fleet -->
-    <div class="data-section auth-card" style="margin: 0; max-width: none;">
-        <h2 style="border-bottom: 2px solid var(--sail-light-blue); padding-bottom: 10px;">Vessel Fleet</h2>
-        <div class="vessel-list">
-            {% for vessel in vessels %}
-            <div class="data-card" style="border: 1px solid #eee; padding: 15px; margin-bottom: 15px; border-radius: 6px; background-color: #fafafa;">
-                <h3 style="margin-top: 0; color: var(--sail-blue);">{{ vessel.class_name }}</h3>
-                <p style="margin: 5px 0;"><strong>DWT Capacity:</strong> {{ "{:,.0f}".format(vessel.typical_dwt_capacity_mt) }} MT</p>
-                <p style="margin: 5px 0;"><strong>Max Draft:</strong> {{ vessel.max_draft_meters }}m</p>
-                <p style="margin: 5px 0;"><strong>Fuel Consumption:</strong> {{ vessel.fuel_consumption_tons_day }} tons/day</p>
-            </div>
-            {% else %}
-            <p>No vessel data available.</p>
-            {% endfor %}
+    <h2 class="section-header">Vessel Fleet</h2>
+    <div class="horizontal-card-grid">
+        {% for vessel in vessels %}
+        <div class="premium-card">
+            <h3>{{ vessel.class_name }}</h3>
+            <p><span class="card-label">DWT Capacity:</span> <span class="card-value">{{ "{:,.0f}".format(vessel.typical_dwt_capacity_mt) }} MT</span></p>
+            <p><span class="card-label">Max Draft:</span> <span class="card-value">{{ vessel.max_draft_meters }}m</span></p>
+            <p><span class="card-label">Fuel Consumption:</span> <span class="card-value">{{ vessel.fuel_consumption_tons_day }} tons/day</span></p>
         </div>
+        {% else %}
+        <p>No vessel data available.</p>
+        {% endfor %}
     </div>
 </div>
+
+<h3 class="section-header" style="margin-top: 50px;">Global Maritime Network</h3>
+<div id="public-global-map" style="height: 400px; width: 100%; border-radius: 8px; box-shadow: var(--shadow-sm); z-index: 1;"></div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('public-global-map')) {
+        var map = L.map('public-global-map').setView([0.0, 90.0], 3);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            minZoom: 2,
+            noWrap: true,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        var eastCoastPorts = {{ eastcoast_ports | tojson | safe }};
+        var foreignPorts = {{ foreign_ports | tojson | safe }};
+
+        eastCoastPorts.forEach(function(port) {
+            if (port.lat && port.lng) {
+                L.marker([port.lat, port.lng]).addTo(map).bindPopup("<b>" + port.port_name + "</b><br>Discharge Port");
+            }
+        });
+
+        foreignPorts.forEach(function(port) {
+            if (port.lat && port.lng) {
+                L.marker([port.lat, port.lng]).addTo(map).bindPopup("<b>" + port.port_name + "</b><br>Origin Port");
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

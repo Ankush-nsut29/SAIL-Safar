@@ -11,8 +11,8 @@
                             "route_name": "Standard Direct (Malacca Approach)",
                             "distance_nm": 2300,
                             "transit_days": 7.4,
-                            "chokepoint_lat": 5.5,
-                            "chokepoint_lon": 98.0
+                            "chokepoint_coords": {"lat": -8.8, "lng": 115.8},
+                            "weather_evasion_days": 3
                         },
                         {
                             "route_name": "Sunda Strait Deviation",
@@ -38,8 +38,8 @@
                             "route_name": "Standard Direct (Malacca Approach)",
                             "distance_nm": 2100,
                             "transit_days": 6.7,
-                            "chokepoint_lat": 5.5,
-                            "chokepoint_lon": 98.0
+                            "chokepoint_coords": {"lat": -8.8, "lng": 115.8},
+                            "weather_evasion_days": 3
                         },
                         {
                             "route_name": "Sunda Strait Deviation",
@@ -70,8 +70,8 @@
                             "route_name": "Standard Route (via Torres Strait)",
                             "distance_nm": 5000,
                             "transit_days": 16.0,
-                            "chokepoint_lat": -10.5,
-                            "chokepoint_lon": 141.5
+                            "chokepoint_coords": {"lat": -10.5, "lng": 142.0},
+                            "weather_evasion_days": 3
                         },
                         {
                             "route_name": "Deep-Water Alternative (via Lombok Strait)",

@@ -1,10 +1,20 @@
 :root {
     --sail-blue: #004085;
+    --sail-dark-blue: #002752;
     --sail-light-blue: #cce5ff;
     --gov-orange: #FF9933;
     --gov-green: #138808;
     --text-color: #333;
+    --text-muted: #666;
     --bg-color: #f4f6f9;
+    --bg-white: #ffffff;
+    --border-light: #eee;
+    --border-gray: #ced4da;
+    --border-input: #ccc;
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+    --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.05);
+    --map-bg: #aad3df;
 }
 
 body {
@@ -15,11 +25,11 @@ body {
 }
 
 .sail-header {
-    background-color: white;
+    background-color: var(--bg-white);
     text-align: center;
     padding: 15px 0;
     border-bottom: 4px solid var(--sail-blue);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow-sm);
 }
 
 .gov-text {
@@ -43,6 +53,10 @@ body {
     justify-content: space-between;
     align-items: center;
     color: white;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 .nav-brand {
@@ -62,18 +76,18 @@ body {
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 95%;
     margin: 30px auto;
     padding: 0 20px;
 }
 
 .auth-card {
-    background: white;
+    background: var(--bg-white);
     max-width: 400px;
     margin: 50px auto;
     padding: 30px;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    box-shadow: var(--shadow-md);
     border-top: 4px solid var(--sail-blue);
 }
 
@@ -162,4 +176,124 @@ body {
     background-color: #d4edda;
     color: #155724;
     border: 1px solid #c3e6cb;
+}
+
+/* Dashboard Grid Component */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 24px;
+    padding: 24px;
+    background-color: #f8f9fa;
+}
+
+/* Procurement Sidebar */
+.dashboard-sidebar {
+    background-color: var(--bg-white);
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    padding: 24px;
+}
+
+.dashboard-sidebar .form-group {
+    margin-bottom: 16px;
+}
+
+.dashboard-sidebar .form-group input,
+.dashboard-sidebar .form-group select {
+    padding: 12px;
+    border: 1px solid var(--border-gray);
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 1em;
+}
+
+.dashboard-sidebar .form-group input:focus,
+.dashboard-sidebar .form-group select:focus {
+    outline: none;
+    border-color: var(--sail-blue);
+    box-shadow: 0 0 0 2px var(--sail-light-blue);
+}
+
+/* Visual Analytics Split */
+.visual-analytics-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+/* Map fix */
+.leaflet-container {
+    background-color: var(--map-bg) !important;
+}
+
+/* Feasibility Table */
+.vessels-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.vessels-table th {
+    background-color: var(--sail-blue);
+    color: white;
+    padding: 12px;
+    text-align: left;
+}
+
+.vessels-table td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.vessels-table tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+/* Home Page Redesign */
+.premium-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    transition: all 0.3s ease;
+}
+.premium-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+}
+.premium-card h3 {
+    margin-top: 0;
+    color: var(--text-color);
+    font-size: 1.1em;
+}
+.premium-card p {
+    margin: 8px 0;
+}
+.premium-card .card-label {
+    color: var(--text-muted);
+    font-size: 0.9em;
+    font-weight: normal;
+}
+.premium-card .card-value {
+    color: var(--text-color);
+    font-weight: bold;
+}
+
+.section-header {
+    color: var(--sail-dark-blue);
+    font-size: 1.3em;
+    font-weight: 600;
+    border-bottom: 2px solid var(--border-light);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.horizontal-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
 }

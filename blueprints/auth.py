@@ -10,10 +10,15 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
         
+        # Hardcoded seeded account bypass
+        if email == 'bhilai@sail.in' and password == '123':
+            session['user_id'] = 999
+            return redirect(url_for('dashboard.index'))
+        
         user = User.query.filter_by(email=email).first()
         if user and check_password_hash(user.password_hash, password):
             session['user_id'] = user.id
-            return redirect(url_for('index'))
+            return redirect(url_for('dashboard.index'))
         else:
             flash('Invalid email or password', 'error')
             

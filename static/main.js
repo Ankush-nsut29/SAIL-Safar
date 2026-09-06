@@ -1,6 +1,57 @@
 document.addEventListener('DOMContentLoaded', function() {
     const analyzeForm = document.getElementById('analyze-form');
     let forecastChart = null;
+    let routeMap = null;
+    let routeLayerGroup = null;
+
+    // Initialize map if container exists
+    if (document.getElementById('route-map')) {
+        routeMap = L.map('route-map').setView([0.0, 90.0], 3);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            minZoom: 2,
+            noWrap: true,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(routeMap);
+        routeLayerGroup = L.layerGroup().addTo(routeMap);
+        
+        // Plot initial ports if available
+        if (window.INITIAL_EASTCOAST_PORTS) {
+            window.INITIAL_EASTCOAST_PORTS.forEach(function(port) {
+                if (port.lat && port.lng) {
+                    L.marker([port.lat, port.lng]).addTo(routeLayerGroup).bindPopup("<b>" + port.port_name + "</b><br>Discharge Port");
+                }
+            });
+        }
+        if (window.INITIAL_FOREIGN_PORTS) {
+            window.INITIAL_FOREIGN_PORTS.forEach(function(port) {
+                if (port.lat && port.lng) {
+                    L.marker([port.lat, port.lng]).addTo(routeLayerGroup).bindPopup("<b>" + port.port_name + "</b><br>Origin Port");
+                }
+            });
+        }
+    }
+    
+    // Initialize empty chart
+    const chartCtx = document.getElementById('forecastChart');
+    if (chartCtx) {
+        forecastChart = new Chart(chartCtx.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Awaiting Analysis...',
+                    data: [],
+                    borderColor: '#ccc',
+                    backgroundColor: 'rgba(200, 200, 200, 0.1)',
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    }
 
     if (analyzeForm) {
         analyzeForm.addEventListener('submit', function(e) {
@@ -59,6 +110,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('kpi-skewness').innerText = data.analysis.stats.skewness;
                 document.getElementById('kpi-kurtosis').innerText = data.analysis.stats.kurtosis;
                 document.getElementById('kpi-landed-cost').innerText = '$' + data.analysis.stats.landed_cost_per_mt + '/MT';
+                
+                // Update Weather Alert
+                const weatherAlert = document.getElementById('weather-alert');
+                const weatherAlertText = document.getElementById('weather-alert-text');
+                if (weatherAlert && weatherAlertText) {
+                    weatherAlert.style.display = 'block';
+                    if (data.weather_detour_active) {
+                        weatherAlert.style.backgroundColor = '#fff3cd';
+                        weatherAlert.style.color = '#856404';
+                        weatherAlert.style.borderColor = '#ffeeba';
+                        weatherAlertText.innerText = "⚠️ Severe Swells Detected (" + data.max_wave_height + "m). Route automatically adjusted for weather evasion. Transit time increased.";
+                    } else if (data.max_wave_height > 0) {
+                        weatherAlert.style.backgroundColor = '#d4edda';
+                        weatherAlert.style.color = '#155724';
+                        weatherAlert.style.borderColor = '#c3e6cb';
+                        weatherAlertText.innerText = "✅ Weather conditions are clear. Max wave height at chokepoint: " + data.max_wave_height + "m. Standard routing applied.";
+                    } else {
+                        weatherAlert.style.backgroundColor = '#e2e3e5';
+                        weatherAlert.style.color = '#383d41';
+                        weatherAlert.style.borderColor = '#d6d8db';
+                        weatherAlertText.innerText = "ℹ️ No significant weather chokepoints on this route. Standard routing applied.";
+                    }
+                }
 
                 // Update Chart
                 document.getElementById('chart-container').style.display = 'block';
@@ -85,6 +159,32 @@ document.addEventListener('DOMContentLoaded', function() {
                         maintainAspectRatio: false
                     }
                 });
+
+                // Update Route Map
+                const routeContainer = document.getElementById('route-map-container');
+                if (routeContainer && routeMap && data.route_coordinates) {
+                    routeContainer.style.display = 'block';
+                    setTimeout(() => {
+                        routeMap.invalidateSize(); // Fix map rendering issue when container was hidden
+                        routeLayerGroup.clearLayers();
+                        
+                        const origin = data.route_coordinates.origin;
+                        const discharge = data.route_coordinates.discharge;
+                        
+                        if (origin[0] !== 0 && discharge[0] !== 0) {
+                            L.marker(origin).addTo(routeLayerGroup).bindPopup('Origin Port');
+                            L.marker(discharge).addTo(routeLayerGroup).bindPopup('Discharge Port');
+                            
+                            const polyline = L.polyline([origin, discharge], {
+                                color: '#004085',
+                                dashArray: '5, 10',
+                                weight: 3
+                            }).addTo(routeLayerGroup);
+                            
+                            routeMap.fitBounds(polyline.getBounds(), { padding: [50, 50] });
+                        }
+                    }, 100);
+                }
 
                 // Update Vessels Table
                 document.getElementById('vessels-container').style.display = 'block';

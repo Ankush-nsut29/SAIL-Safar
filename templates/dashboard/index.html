@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="dashboard-container" style="display: flex; gap: 20px; flex-wrap: wrap;">
+<div class="dashboard-grid">
     <!-- Sidebar -->
-    <div class="sidebar auth-card" style="margin: 0; width: 300px; flex-shrink: 0; padding: 20px;">
+    <div class="dashboard-sidebar">
         <h3 style="margin-top: 0; color: var(--sail-blue);">Voyage Parameters</h3>
         <form id="analyze-form">
             <div class="form-group">
                 <label>Origin Port</label>
-                <select id="origin_port" required style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+                <select id="origin_port" required>
                     <option value="">Select Origin...</option>
                     {% for port in foreign_ports %}
                     <option value="{{ port.port_name }}">{{ port.port_name }}</option>
@@ -17,7 +17,7 @@
             </div>
             <div class="form-group">
                 <label>Discharge Port</label>
-                <select id="discharge_port" required style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+                <select id="discharge_port" required>
                     <option value="">Select Discharge...</option>
                     {% for port in eastcoast_ports %}
                     <option value="{{ port.port_name }}">{{ port.port_name }}</option>
@@ -30,7 +30,7 @@
             </div>
             <div class="form-group">
                 <label>Contract Window (Days)</label>
-                <select id="contract_window_days" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+                <select id="contract_window_days">
                     <option value="30">30 Days</option>
                     <option value="90">90 Days</option>
                     <option value="180">180 Days</option>
@@ -54,7 +54,11 @@
             <span id="rec-text"></span>
         </div>
 
-        <div id="kpi-cards" style="display: none; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 20px;">
+        <div id="weather-alert" style="display: none; padding: 15px; border-radius: 8px; margin-bottom: 20px; background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; font-weight: bold;">
+            <span id="weather-alert-text"></span>
+        </div>
+
+        <div id="kpi-cards" style="display: none; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px;">
             <div class="data-card" style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid var(--sail-blue); box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
                 <h4 style="margin: 0 0 10px 0; color: #666; font-size: 0.9em;">Mean Rate (USD)</h4>
                 <div id="kpi-mean" style="font-size: 1.4em; font-weight: bold; color: var(--sail-blue);"></div>
@@ -77,20 +81,27 @@
             </div>
         </div>
 
-        <div id="chart-container" style="display: none; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px;">
-            <canvas id="forecastChart" style="max-height: 300px; width: 100%;"></canvas>
+        <div class="visual-analytics-split">
+            <div id="chart-container" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); min-height: 400px; overflow: hidden; display: flex; flex-direction: column;">
+                <canvas id="forecastChart" style="flex-grow: 1; width: 100%;"></canvas>
+            </div>
+
+            <div id="route-map-container" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); min-height: 400px; overflow: hidden; display: flex; flex-direction: column;">
+                <h3 style="margin-top: 0; color: var(--sail-blue);">Maritime Route</h3>
+                <div id="route-map" style="flex-grow: 1; min-height: 350px; border-radius: 4px; z-index: 1;"></div>
+            </div>
         </div>
 
         <div id="vessels-container" style="display: none; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
             <h3 style="margin-top: 0; color: var(--sail-blue);">Vessel Feasibility Matrix</h3>
             <div style="overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse; min-width: 500px;">
+                <table class="vessels-table">
                     <thead>
-                        <tr style="background-color: var(--sail-blue); color: white;">
-                            <th style="padding: 12px; text-align: left;">Vessel Class</th>
-                            <th style="padding: 12px; text-align: left;">DWT Capacity</th>
-                            <th style="padding: 12px; text-align: left;">Required Draft (m)</th>
-                            <th style="padding: 12px; text-align: left;">Status</th>
+                        <tr>
+                            <th>Vessel Class</th>
+                            <th>DWT Capacity</th>
+                            <th>Required Draft (m)</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody id="vessels-table">
@@ -102,5 +113,9 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    window.INITIAL_EASTCOAST_PORTS = {{ eastcoast_ports | tojson | safe }};
+    window.INITIAL_FOREIGN_PORTS = {{ foreign_ports | tojson | safe }};
+</script>
 <script src="{{ url_for('static', filename='main.js') }}"></script>
 {% endblock %}

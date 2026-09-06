@@ -2,6 +2,8 @@
   "east_coast_ports": [
     {
       "port_name": "Haldia Dock Complex",
+      "lat": 22.02,
+      "lng": 88.06,
       "max_draft_meters": 13.0,
       "max_loa_meters": 230,
       "allowed_vessel_classes": [
@@ -13,6 +15,8 @@
     },
     {
       "port_name": "Paradip Port",
+      "lat": 20.26,
+      "lng": 86.67,
       "max_draft_meters": 16.5,
       "max_loa_meters": 300,
       "allowed_vessel_classes": [
@@ -24,6 +28,8 @@
     },
     {
       "port_name": "Visakhapatnam Port",
+      "lat": 17.69,
+      "lng": 83.29,
       "max_draft_meters": 18.0,
       "max_loa_meters": 300,
       "allowed_vessel_classes": [

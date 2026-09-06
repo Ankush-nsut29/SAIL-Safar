@@ -41,6 +41,12 @@ The **SAIL Intelligent Freight Advisory Portal** is a Decision Support System (D
   - An interactive form where procurement officers input voyage parameters.
   - Asynchronously updates KPI cards, a Recommendation Banner, a Vessel Feasibility Matrix table, and a Chart.js historical line graph.
 
+### Phase 4: Weather Integration & Enterprise Redesign (Version 2)
+* **Open-Meteo Marine API (`blueprints/dashboard.py`)**: Added real-time chokepoint wave height checks. Triggers detour penalties (extra transit days and fuel costs) if wave heights exceed safe limits.
+* **CSS Grid Architecture (`static/style.css`)**: Overhauled the entire application layout. Abstracted colors and shadows into `:root` CSS variables.
+* **Dashboard Split-View**: Redesigned the dashboard to feature a fixed sidebar, top-row KPIs, and a perfectly balanced split-view for mapping and financial forecasting.
+* **Map Optimization**: Migrated to OpenStreetMap tiles and fixed infinite wrapping and rendering issues on ultra-wide monitors.
+
 ## 4. How the Application Flows
 1. User **logs in** and navigates to the **Dashboard**.
 2. User selects an Origin Port, Discharge Port, Cargo Volume, Contract Window, Fuel Price, and Transit Time.
