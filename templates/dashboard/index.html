@@ -58,6 +58,10 @@
             <span id="weather-alert-text"></span>
         </div>
 
+        <div id="cargo-cap-alert" style="display: none; padding: 15px; border-radius: 8px; margin-bottom: 20px; background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; font-weight: bold;">
+            <span id="cargo-cap-text"></span>
+        </div>
+
         <div id="kpi-cards" style="display: none; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px;">
             <div class="data-card" style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid var(--sail-blue); box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
                 <h4 style="margin: 0 0 10px 0; color: #666; font-size: 0.9em;">Mean Rate (USD)</h4>
@@ -101,6 +105,7 @@
                             <th>Vessel Class</th>
                             <th>DWT Capacity</th>
                             <th>Required Draft (m)</th>
+                            <th>Max Safe Load (MT)</th>
                             <th>Status</th>
                         </tr>
                     </thead>

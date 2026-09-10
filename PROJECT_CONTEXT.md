@@ -30,6 +30,7 @@ The **SAIL Intelligent Freight Advisory Portal** is a Decision Support System (D
 * **Vessel Feasibility Engine (`services/vessel_engine.py`)**: 
   - Cross-references selected Origin and Discharge port constraints.
   - Determines if a vessel is "Feasible" or restricted by "Draft Exceeded" / "LOA Exceeded".
+  - **Dynamic Cargo Capping:** Uses inverse-draft math to automatically calculate the maximum safe payload if a vessel's draft exceeds the port's limit, capping the cargo instead of outright rejecting the vessel.
   - Automatically identifies the largest feasible vessel for economies of scale.
 * **Statistical Calculator (`services/calculator.py`)**:
   - Dynamically loads cleaned historical freight rate CSVs (`Cleaned_{vessel_class}.csv`) via Pandas.
@@ -52,7 +53,7 @@ The **SAIL Intelligent Freight Advisory Portal** is a Decision Support System (D
 2. User selects an Origin Port, Discharge Port, Cargo Volume, Contract Window, Fuel Price, and Transit Time.
 3. On submit, JavaScript intercepts and sends a JSON payload to `/dashboard/api/analyze`.
 4. The Backend Engine:
-    * Calculates physical constraints.
+    * Calculates physical constraints and dynamic cargo caps via inverse-draft math.
     * Selects the largest feasible vessel.
-    * Computes statistical risk and landed costs using Pandas.
-5. The Backend returns JSON, and the Frontend updates the DOM in real-time, displaying the financial KPIs, visual chart, and a clear charter recommendation.
+    * Computes statistical risk and landed costs using Pandas, ensuring costs reflect the capped payload if constraints were breached.
+5. The Backend returns JSON, and the Frontend updates the DOM in real-time, displaying the financial KPIs, visual chart, a clear charter recommendation, and any cargo cap warnings.

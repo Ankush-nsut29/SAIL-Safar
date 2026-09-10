@@ -36,12 +36,14 @@ The backend doesn't just estimate costs; it calculates the exact risk profile of
 * **Spot Voyage Charter (Fixed $/MT):** Recommended when market variance is low or skewness is negative. The shipowner assumes the risk of weather delays and bunker fuel spikes.
 * **Time Charter (Fixed $/Day):** Recommended when positive skewness indicates an impending upward price spike. SAIL assumes the risk of weather/fuel but hedges against market explosions.
 
-### B. Landed Cost Calculation (Time Charter)
+### B. Landed Cost Calculation & Dynamic Cargo Capping
 To compare a Time Charter against a historical Spot Rate, the engine calculates the true landed cost per metric ton using the following formula:
 
 `Landed Cost = ((Daily Hire Rate * Total Voyage Days) + (Total Fuel Consumed * Bunker Price)) / Cargo Volume (MT)`
 
 > **Note:** Total Voyage Days = Laden Transit Days + Ballast (Empty) Return Days + Port Turnaround Days.
+
+**Dynamic Cargo Capping:** If the physical draft limit of the port restricts the vessel, the engine automatically runs inverse-draft math to calculate the maximum safe payload. If the requested cargo volume exceeds this safe limit, the system caps the payload and dynamically recalculates the Landed Cost ($/MT) based on the reduced volume, flashing a warning to the procurement officer.
 
 ### C. Statistical Risk Indicators (Pandas/NumPy)
 * **Mean Rate:** Baseline expected freight cost over the 30/60/90-day horizon.

@@ -134,6 +134,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
 
+                // Update Cargo Cap Alert
+                const cargoCapAlert = document.getElementById('cargo-cap-alert');
+                const cargoCapText = document.getElementById('cargo-cap-text');
+                if (cargoCapAlert && cargoCapText) {
+                    if (data.cargo_capped) {
+                        cargoCapAlert.style.display = 'block';
+                        cargoCapText.innerText = `⚠️ Draft Limit Exceeded: Requested ${data.original_request} MT cannot safely enter the selected ports. Cargo automatically adjusted to Maximum Safe Payload of ${data.capped_volume} MT.`;
+                    } else {
+                        cargoCapAlert.style.display = 'none';
+                    }
+                }
+
                 // Update Chart
                 document.getElementById('chart-container').style.display = 'block';
                 const ctx = document.getElementById('forecastChart').getContext('2d');
@@ -192,12 +204,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 tbody.innerHTML = '';
                 data.vessels.forEach(v => {
                     const row = document.createElement('tr');
-                    const isFeasible = v.status === 'Feasible';
+                    const isFeasible = v.status === 'Feasible' || v.status.includes('Capped');
                     row.style.borderBottom = '1px solid #eee';
                     row.innerHTML = `
                         <td style="padding: 12px;">${v.class_name}</td>
                         <td style="padding: 12px;">${v.dwt.toLocaleString()}</td>
                         <td style="padding: 12px;">${v.draft}</td>
+                        <td style="padding: 12px;">${v.max_allowable_cargo ? v.max_allowable_cargo.toLocaleString() : '0'}</td>
                         <td style="padding: 12px; font-weight: bold; color: ${isFeasible ? '#138808' : '#dc3545'};">${v.status}</td>
                     `;
                     tbody.appendChild(row);

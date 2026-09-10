@@ -14,12 +14,13 @@ This document provides a comprehensive list of all the features and capabilities
 ## 3. The Interactive Procurement Dashboard
 * **Dynamic Input Form:** A responsive sidebar for officers to input critical voyage parameters: Origin Port, Discharge Port, Cargo Volume, Contract Window, Fuel Price, and Est. Transit Time.
 * **Asynchronous UX:** Powered by the Fetch API, the dashboard updates all visualizations, tables, and maps in real-time without reloading the page.
-* **Vessel Feasibility Matrix:** A real-time table that displays the exact draft constraints for the selected route and visually flags which vessel classes are "Feasible" vs "Draft Exceeded".
+* **Vessel Feasibility Matrix:** A real-time table that displays the exact draft constraints for the selected route, visually flags vessel status, and shows the newly calculated **Max Safe Load (MT)** for each vessel class.
 * **Dynamic Route Map:** An interactive Leaflet.js map that instantly drops markers on the selected Origin and Discharge ports, draws a dashed maritime route between them, and automatically pans/zooms the camera to frame the specific voyage.
 
 ## 4. The Mathematical & Strategic Engine
 * **Live Pandas Integration:** Reads from actual historical Baltic Dry Index (BDI) datasets (`Cleaned_Capesize.csv`, etc.) in the backend.
 * **Physical Constraints Engine:** Automatically cross-references port restrictions to select the absolute largest feasible vessel, maximizing economies of scale.
+* **Dynamic Cargo Capping:** If a vessel's draft exceeds a port's limit, the engine uses inverse-draft math to calculate the maximum safe payload, capping the cargo and dynamically adjusting cost estimates rather than rejecting the vessel entirely.
 * **Statistical Risk Indicators:** Dynamically calculates Mean Rate, Variance, Skewness, and Kurtosis over the specific contract window requested by the user.
 * **True Landed Cost Calculator:** Computes the final Estimated Landed Cost per metric ton by fusing the statistical freight rate with the dynamic global bunker fuel price and daily fuel consumption of the vessel.
 * **Automated Decision Matrix:** Outputs a firm strategic recommendation banner. If market skewness is heavily positive (indicating a risk of sudden price explosions), it recommends locking in a **Period Time Charter**. Otherwise, it suggests a **Spot Voyage Charter**.

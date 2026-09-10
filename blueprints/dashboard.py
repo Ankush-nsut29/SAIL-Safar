@@ -51,6 +51,18 @@ def api_analyze():
     
     if not largest_vessel:
         return jsonify({"error": "No feasible vessel found for these ports."}), 400
+
+    max_allowable_cargo = largest_vessel.get('max_allowable_cargo', largest_vessel.get('typical_dwt_capacity_mt', 0))
+    cargo_capped = False
+    capped_volume = 0
+    original_request = cargo_volume
+    
+    if cargo_volume > max_allowable_cargo:
+        cargo_capped = True
+        capped_volume = max_allowable_cargo
+        used_cargo_volume = max_allowable_cargo
+    else:
+        used_cargo_volume = cargo_volume
         
     df = load_csv_as_dataframe(largest_vessel['class_name'])
     
@@ -83,7 +95,7 @@ def api_analyze():
             weather_detour_active = True
             transit_days += evasion_days
     
-    analysis = calculate_route_stats(largest_vessel, contract_window_days, transit_days, cargo_volume, fuel_price, df)
+    analysis = calculate_route_stats(largest_vessel, contract_window_days, transit_days, used_cargo_volume, fuel_price, df)
     
     origin_lat = 0
     origin_lng = 0
@@ -108,6 +120,9 @@ def api_analyze():
         "analysis": analysis,
         "weather_detour_active": weather_detour_active,
         "max_wave_height": round(max_wave_height, 2) if max_wave_height else 0,
+        "cargo_capped": cargo_capped,
+        "original_request": original_request,
+        "capped_volume": capped_volume,
         "route_coordinates": {
             "origin": [origin_lat, origin_lng],
             "discharge": [discharge_lat, discharge_lng]
