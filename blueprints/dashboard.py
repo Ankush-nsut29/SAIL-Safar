@@ -73,6 +73,14 @@ def api_analyze():
             origin_country = port.get('country', '')
             break
             
+    # Determine baseline transit days based on origin
+    if origin_country == "Australia":
+        transit_days = 16.0
+    elif origin_country == "Indonesia":
+        transit_days = 7.5
+    else:
+        transit_days = 12.0
+
     # Evasion logic
     weather_detour_active = False
     max_wave_height = 0
@@ -100,7 +108,8 @@ def api_analyze():
         'discharge_port': discharge_port,
         'vessel_class': largest_vessel['class_name'],
         'cargo_volume': used_cargo_volume,
-        'contract_window_days': contract_window_days
+        'contract_window_days': contract_window_days,
+        'transit_days': transit_days
     }
     
     ml_results = run_voyage_simulation(voyage_data)
