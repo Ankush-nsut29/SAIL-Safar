@@ -144,8 +144,8 @@ class FuelPredictor:
             # MODEL 2: XGBOOST REGRESSOR (Advanced Spike Model)
             # ====================================================
             xgb_model = XGBRegressor(
-                n_estimators=150,
-                max_depth=4,
+                n_estimators=10,
+                max_depth=3,
                 learning_rate=0.05,
                 subsample=0.8,
                 random_state=42

@@ -187,12 +187,12 @@ class FreightRatePredictor:
 
             # MODEL 2: XGBOOST REGRESSOR
             xgb_eval = XGBRegressor(
-                n_estimators=200,
-                max_depth=4,
+                n_estimators=10,
+                max_depth=3,
                 learning_rate=0.04,
                 subsample=0.8,
                 random_state=self.random_state,
-                n_jobs=2
+                n_jobs=1
             )
             xgb_eval.fit(X_train_s, y_train)
 
@@ -229,7 +229,7 @@ class FreightRatePredictor:
             lr_final = LinearRegression()
             lr_final.fit(X_all_s, y)
 
-            xgb_final = XGBRegressor(n_estimators=200, max_depth=4, learning_rate=0.04, random_state=self.random_state)
+            xgb_final = XGBRegressor(n_estimators=10, max_depth=3, learning_rate=0.04, random_state=self.random_state)
             xgb_final.fit(X_all_s, y)
 
             self.models[f"{vc}_linear"] = lr_final
