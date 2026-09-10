@@ -11,7 +11,13 @@ def login():
         password = request.form.get('password')
         
         # Hardcoded seeded account bypass
-        if email == 'bhilai@sail.in' and password == '123':
+        seeded_accounts = [
+            'bhilai@sail.in',
+            'bokaro@sail.in',
+            'rourkela@sail.in',
+            'durgapur@sail.in'
+        ]
+        if email in seeded_accounts and password == '123':
             session['user_id'] = 999
             return redirect(url_for('dashboard.index'))
         

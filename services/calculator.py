@@ -1,59 +1,72 @@
 import pandas as pd
 import numpy as np
+from services.predictors import (
+    FreightRatePredictor, FuelPredictor, CommodityPredictor, 
+    WeatherPredictor, PortPredictor, DemandPredictor
+)
 
-def calculate_route_stats(largest_vessel, contract_window_days, transit_days, cargo_volume, fuel_price, historical_df):
-    if historical_df.empty or largest_vessel is None:
-        return {}
+# Instantiate models at module level to avoid retraining on every request
+freight_pred = FreightRatePredictor()
+fuel_pred = FuelPredictor()
+weather_pred = WeatherPredictor()
+port_pred = PortPredictor()
+demand_pred = DemandPredictor()
+commodity_pred = CommodityPredictor()
+
+def run_voyage_simulation(voyage_data):
+    vessel_class = voyage_data.get('vessel_class', 'Panamax')
+    origin = voyage_data.get('origin_port', '')
+    discharge = voyage_data.get('discharge_port', 'Paradip Port')
+    cargo = voyage_data.get('cargo_volume', 55000)
+    window = voyage_data.get('contract_window_days', 30)
+    user_fuel = voyage_data.get('fuel_price', 600)
+    transit_days = voyage_data.get('transit_days', 15)
+    
+    target_date = pd.Timestamp.now() + pd.Timedelta(days=14)
+
+    # Execute Predictors
+    freight_res = freight_pred.predict_rate(vessel_class=vessel_class, target_date=target_date)
+    stats_res = freight_pred.get_stats(vessel_class=vessel_class, window=window)
+    fuel_res = fuel_pred.calculate_voyage_fuel_cost(vessel_class=vessel_class, transit_days=transit_days, port_days=5.0, fuel_price_input=user_fuel, origin_port=origin)
+    weather_res = weather_pred.predict(voyage_date=target_date, origin=origin, destination=discharge)
+    port_res = port_pred.predict_port_costs(port_name=discharge, vessel_class=vessel_class, cargo_mt=cargo, target_date=target_date)
+    demand_res = demand_pred.predict_demand(commodity='coking_coal', plant='Bhilai Steel Plant', target_date=target_date, contract_days=window)
+    commodity_res = commodity_pred.predict(commodity='coking_coal', target_date=target_date, cargo_mt=cargo)
+
+    # Calculate Totals
+    total_voyage_days = (transit_days * 2) + 4 + weather_res['predicted_delay_days']
+    freight_voyage_cost = freight_res['predicted_rate'] * total_voyage_days
+    
+    total_estimated_cost_usd = freight_voyage_cost + fuel_res['total_fuel_cost_usd'] + port_res['total_port_cost_usd']
+    landed_cost_per_mt = total_estimated_cost_usd / max(cargo, 1.0)
+
+    ml_results = {
+        'freight': freight_res,
+        'stats': stats_res,
+        'fuel': fuel_res,
+        'weather': weather_res,
+        'port': port_res,
+        'demand': demand_res,
+        'commodity': commodity_res,
         
-    contract_window_days = int(contract_window_days)
-    transit_days = float(transit_days)
-    cargo_volume = float(cargo_volume)
-    fuel_price = float(fuel_price)
-    
-    df_slice = historical_df.tail(contract_window_days)
-    
-    if 'Price' in df_slice.columns:
-        prices = df_slice['Price']
-    else:
-        return {}
+        # Extracted key metrics for UI cards
+        'predicted_freight_rate': freight_res['predicted_rate'],
+        'mean_rate': stats_res['mean_rate'],
+        'variance': stats_res['variance'],
+        'skewness': stats_res['skewness'],
+        'kurtosis': stats_res['kurtosis'],
+        'chart_data': stats_res['chart_data'],
+        'forecast_data': freight_pred.forecast_series(vessel_class=vessel_class, days=window),
         
-    mean_price = prices.mean()
-    var_price = prices.var()
-    skew_price = prices.skew()
-    kurt_price = prices.kurt()
-    
-    total_voyage_days = (transit_days * 2) + 4
-    vessel_fuel_consumption = largest_vessel['fuel_consumption_tons_day']
-    total_fuel_cost = total_voyage_days * vessel_fuel_consumption * fuel_price
-    
-    landed_cost_per_mt = ((mean_price * total_voyage_days) + total_fuel_cost) / cargo_volume
-    
-    if skew_price > 0.5:
-        recommendation = "Market is volatile and skewed positively. We recommend a Period Time Charter to lock in rates."
-        decision_type = "Period Time Charter"
-    else:
-        recommendation = "Market is relatively stable or favorable. Spot Voyage Charter is recommended."
-        decision_type = "Spot Voyage Charter"
+        'weather_delay_days': weather_res['predicted_delay_days'],
+        'weather_message': weather_res['message'],
         
-    dates = df_slice['Date'].tolist() if 'Date' in df_slice.columns else list(range(len(df_slice)))
-    
-    # Handle NaN in case of too small window for stats
-    var_price = 0 if np.isnan(var_price) else var_price
-    skew_price = 0 if np.isnan(skew_price) else skew_price
-    kurt_price = 0 if np.isnan(kurt_price) else kurt_price
-    
-    return {
-        "recommendation": recommendation,
-        "decision_type": decision_type,
-        "stats": {
-            "mean": round(mean_price, 2),
-            "variance": round(var_price, 2),
-            "skewness": round(skew_price, 2),
-            "kurtosis": round(kurt_price, 2),
-            "landed_cost_per_mt": round(landed_cost_per_mt, 2)
-        },
-        "chart_data": {
-            "labels": dates,
-            "values": prices.tolist()
-        }
+        'total_fuel_cost': round(fuel_res['total_fuel_cost_usd'], 2),
+        'total_port_cost': round(port_res['total_port_cost_usd'], 2),
+        'demurrage_risk': port_res['expected_demurrage_cost_usd'],
+        
+        'total_estimated_cost_usd': round(total_estimated_cost_usd, 2),
+        'landed_cost_per_mt': round(landed_cost_per_mt, 2),
+        'total_voyage_days': round(total_voyage_days, 1)
     }
+    return ml_results

@@ -36,22 +36,28 @@
                     <option value="180">180 Days</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label>Fuel Price (USD/MT)</label>
-                <input type="number" id="fuel_price" value="600" required>
-            </div>
-            <div class="form-group">
-                <label>Est. Transit Time (Days)</label>
-                <input type="number" id="transit_days" value="15" required>
-            </div>
             <button type="submit" class="btn-primary">Analyze Route & Costs</button>
         </form>
     </div>
 
     <!-- Main Panel -->
     <div class="main-panel" style="flex-grow: 1; min-width: 0;">
-        <div id="rec-banner" style="display: none; padding: 20px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; font-size: 1.1em;">
-            <span id="rec-text"></span>
+        <div id="ai-advisory-card" style="display: none; padding: 20px; border-radius: 8px; margin-bottom: 20px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-left: 4px solid #6f42c1; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <h3 style="margin-top: 0; color: #6f42c1; font-size: 1.2em; margin-bottom: 15px;">🤖 Groq AI Executive Advisory</h3>
+            <div style="display: flex; gap: 20px; margin-bottom: 15px;">
+                <div style="flex: 1; background: white; padding: 10px 15px; border-radius: 6px; border: 1px solid #e9ecef;">
+                    <strong style="color: #495057; font-size: 0.9em; text-transform: uppercase;">Recommended Strategy</strong>
+                    <div id="ai-contract-strategy" style="font-size: 1.2em; font-weight: bold; color: #6f42c1; margin-top: 5px;"></div>
+                </div>
+                <div style="flex: 1; background: white; padding: 10px 15px; border-radius: 6px; border: 1px solid #e9ecef;">
+                    <strong style="color: #495057; font-size: 0.9em; text-transform: uppercase;">Optimal Timing</strong>
+                    <div id="ai-optimal-timing" style="font-size: 1.2em; font-weight: bold; color: #198754; margin-top: 5px;"></div>
+                </div>
+            </div>
+            <div style="background: white; padding: 15px; border-radius: 6px; border: 1px solid #e9ecef;">
+                <strong style="color: #495057; font-size: 0.9em; text-transform: uppercase; display: block; margin-bottom: 5px;">Strategic Rationale</strong>
+                <p id="ai-strategic-rationale" style="margin: 0; font-size: 1.05em; line-height: 1.5; color: #333;"></p>
+            </div>
         </div>
 
         <div id="weather-alert" style="display: none; padding: 15px; border-radius: 8px; margin-bottom: 20px; background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; font-weight: bold;">
@@ -62,26 +68,37 @@
             <span id="cargo-cap-text"></span>
         </div>
 
-        <div id="kpi-cards" style="display: none; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px;">
+        <div id="kpi-cards" style="display: none; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
             <div class="data-card" style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid var(--sail-blue); box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                <h4 style="margin: 0 0 10px 0; color: #666; font-size: 0.9em;">Mean Rate (USD)</h4>
-                <div id="kpi-mean" style="font-size: 1.4em; font-weight: bold; color: var(--sail-blue);"></div>
+                <h4 style="margin: 0 0 10px 0; color: #666; font-size: 0.9em;">Predicted Freight ($/day)</h4>
+                <div id="kpi-freight" style="font-size: 1.4em; font-weight: bold; color: var(--sail-blue);"></div>
             </div>
             <div class="data-card" style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #FF9933; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                <h4 style="margin: 0 0 10px 0; color: #666; font-size: 0.9em;">Variance</h4>
-                <div id="kpi-variance" style="font-size: 1.4em; font-weight: bold; color: var(--sail-blue);"></div>
+                <h4 style="margin: 0 0 10px 0; color: #666; font-size: 0.9em;">Cargo Payload (MT)</h4>
+                <div id="kpi-cargo" style="font-size: 1.4em; font-weight: bold; color: var(--sail-blue);"></div>
             </div>
             <div class="data-card" style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #138808; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                <h4 style="margin: 0 0 10px 0; color: #666; font-size: 0.9em;">Skewness</h4>
-                <div id="kpi-skewness" style="font-size: 1.4em; font-weight: bold; color: var(--sail-blue);"></div>
+                <h4 style="margin: 0 0 10px 0; color: #666; font-size: 0.9em;">Est. Weather Delay</h4>
+                <div id="kpi-weather" style="font-size: 1.4em; font-weight: bold; color: var(--sail-blue);"></div>
             </div>
             <div class="data-card" style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #dc3545; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                <h4 style="margin: 0 0 10px 0; color: #666; font-size: 0.9em;">Kurtosis</h4>
-                <div id="kpi-kurtosis" style="font-size: 1.4em; font-weight: bold; color: var(--sail-blue);"></div>
+                <h4 style="margin: 0 0 10px 0; color: #666; font-size: 0.9em;">Total Est. Cost (USD)</h4>
+                <div id="kpi-total-cost" style="font-size: 1.4em; font-weight: bold; color: var(--sail-blue);"></div>
             </div>
-            <div class="data-card" style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #17a2b8; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                <h4 style="margin: 0 0 10px 0; color: #666; font-size: 0.9em;">Est. Landed Cost</h4>
-                <div id="kpi-landed-cost" style="font-size: 1.4em; font-weight: bold; color: var(--sail-blue);"></div>
+        </div>
+
+        <div id="ml-stats-cards" style="display: none; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
+            <div class="data-card" style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #6f42c1; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <h4 style="margin: 0 0 10px 0; color: #666; font-size: 0.9em;">Market Volatility (Variance)</h4>
+                <div id="stat-variance" style="font-size: 1.4em; font-weight: bold; color: #333;"></div>
+            </div>
+            <div class="data-card" style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #6f42c1; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <h4 style="margin: 0 0 10px 0; color: #666; font-size: 0.9em;">Market Trend (Skewness)</h4>
+                <div id="stat-skewness" style="font-size: 1.4em; font-weight: bold; color: #333;"></div>
+            </div>
+            <div class="data-card" style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #198754; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <h4 style="margin: 0 0 10px 0; color: #666; font-size: 0.9em;">AI Model Confidence (R²)</h4>
+                <div id="stat-r2" style="font-size: 1.4em; font-weight: bold; color: #333;"></div>
             </div>
         </div>
 

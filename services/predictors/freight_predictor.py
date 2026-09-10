@@ -49,7 +49,7 @@ def ensure_freight_datasets_exist(data_dir='data'):
                 'Price': np.round(np.maximum(prices, 400.0), 2)
             })
             df.to_csv(path, index=False)
-            print(f"  ✓ Created fallback dataset for {vc}.")
+            print(f"  [OK] Created fallback dataset for {vc}.")
 
 
 class FreightRatePredictor:
@@ -238,7 +238,7 @@ class FreightRatePredictor:
             self.feature_columns[vc] = feature_cols
             self.ensemble_weights[vc] = {'linear_regression': w_lr, 'xgboost': w_xgb}
 
-            print(f"  ✓ {vc:<12} | R²: {metrics_ensemble['r2']:.4f} | MAPE: {metrics_ensemble['mape_percent']:.2f}% | Weights: [LR: {w_lr:.2f}, XGB: {w_xgb:.2f}]")
+            print(f"  [OK] {vc:<12} | R²: {metrics_ensemble['r2']:.4f} | MAPE: {metrics_ensemble['mape_percent']:.2f}% | Weights: [LR: {w_lr:.2f}, XGB: {w_xgb:.2f}]")
 
         self.is_trained = True
         return self

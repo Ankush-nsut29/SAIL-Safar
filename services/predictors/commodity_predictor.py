@@ -52,7 +52,7 @@ def ensure_dataset_exists(data_path='data/Raw_Material_Prices.csv'):
     })
 
     df.to_csv(data_path, index=False)
-    print(f"✓ Dataset created successfully ({len(df)} records).")
+    print(f"[OK] Dataset created successfully ({len(df)} records).")
 
 
 class CommodityPredictor:
@@ -273,7 +273,7 @@ class CommodityPredictor:
             self.ensemble_weights[commodity] = {'linear_regression': w_lr, 'xgboost': w_xgb}
             self.cadence_days[commodity] = 1.0
 
-            print(f"  ✓ {commodity:<15} | R²: {metrics_ensemble['r2']:.4f} | MAPE: {metrics_ensemble['mape_percent']:.2f}% | Weights: [LR: {w_lr:.2f}, XGB: {w_xgb:.2f}]")
+            print(f"  [OK] {commodity:<15} | R²: {metrics_ensemble['r2']:.4f} | MAPE: {metrics_ensemble['mape_percent']:.2f}% | Weights: [LR: {w_lr:.2f}, XGB: {w_xgb:.2f}]")
 
         self.is_trained = True
         return self

@@ -8,7 +8,8 @@
       "max_loa_meters": 230,
       "allowed_vessel_classes": [
         "Handysize",
-        "Supramax"
+        "Supramax",
+        "Panamax"
       ],
       "notes": "Tidal restrictions apply on the Hooghly River channel.",
       "_source_link": "https://mopsw.nic.in/sagarvidyakosh/index.php?title=Haldia_Dock_Complex"

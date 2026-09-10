@@ -2,7 +2,9 @@ from flask import Blueprint, render_template, session, redirect, url_for, reques
 from services.data_loader import get_eastcoast_ports, get_foreign_ports, get_vessels, load_csv_as_dataframe, get_routes
 import requests
 from services.vessel_engine import check_feasibility
-from services.calculator import calculate_route_stats
+from services.calculator import run_voyage_simulation
+import os
+from openai import OpenAI
 
 dashboard_bp = Blueprint('dashboard', __name__, url_prefix='/dashboard')
 
@@ -38,10 +40,8 @@ def api_analyze():
     data = request.json
     origin_port = data.get('origin_port')
     discharge_port = data.get('discharge_port')
-    cargo_volume = data.get('cargo_volume', 0)
-    contract_window_days = data.get('contract_window_days', 30)
-    fuel_price = data.get('fuel_price', 600)
-    transit_days = data.get('transit_days', 15)
+    cargo_volume = data.get('cargo_volume') or 0
+    contract_window_days = data.get('contract_window_days') or 30
     
     vessels_data = get_vessels()
     foreign_ports_data = get_foreign_ports()
@@ -95,7 +95,61 @@ def api_analyze():
             weather_detour_active = True
             transit_days += evasion_days
     
-    analysis = calculate_route_stats(largest_vessel, contract_window_days, transit_days, used_cargo_volume, fuel_price, df)
+    voyage_data = {
+        'origin_port': origin_port,
+        'discharge_port': discharge_port,
+        'vessel_class': largest_vessel['class_name'],
+        'cargo_volume': used_cargo_volume,
+        'contract_window_days': contract_window_days
+    }
+    
+    ml_results = run_voyage_simulation(voyage_data)
+    
+    prompt_payload = f"""
+    Voyage Data:
+    - Route: {origin_port} to {discharge_port}
+    - Vessel: {largest_vessel['class_name']}
+    - Cargo: {used_cargo_volume} MT
+    - Contract Window: {contract_window_days} Days
+    
+    ML Predictions:
+    - Predicted Daily Freight Rate: ${ml_results['predicted_freight_rate']}/day
+    - Total Fuel Cost: ${ml_results['total_fuel_cost']}
+    - Port & Demurrage Costs: ${ml_results['total_port_cost']}
+    - Est. Weather Delay: {ml_results['weather_delay_days']} days
+    - Market Skewness: {ml_results['skewness']}
+    - Total Estimated Landed Cost: ${ml_results['landed_cost_per_mt']}/MT
+    """
+    
+    import json
+    ai_advisory_json = {}
+    try:
+        client = OpenAI(api_key=os.getenv("GROQ_API_KEY", ""), base_url="https://api.groq.com/openai/v1")
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            response_format={"type": "json_object"},
+            messages=[
+                {"role": "system", "content": "You are an elite maritime procurement advisor for SAIL. Output ONLY a valid JSON object with three exact keys: 'recommended_contract' (String: 'Spot Voyage Charter' or 'Period Time Charter'), 'optimal_timing' (String: e.g., 'Immediate'), and 'strategic_rationale' (String: 2-3 sentences explaining the trade-off based on the math)."},
+                {"role": "user", "content": prompt_payload}
+            ]
+        )
+        ai_advisory_json = json.loads(response.choices[0].message.content.strip())
+    except Exception as e:
+        print(f"Groq API Error: {e}")
+        if ml_results['skewness'] > 0.5:
+            ai_advisory_json = {
+                "recommended_contract": "Period Time Charter",
+                "optimal_timing": "Immediate",
+                "strategic_rationale": "Based on high market volatility and positive skewness, a Period Time Charter is strongly recommended to hedge against rate spikes. Expected landed cost is highly sensitive to current port congestion and weather delays. Lock in long-term tonnage to stabilize procurement costs."
+            }
+        else:
+            ai_advisory_json = {
+                "recommended_contract": "Spot Voyage Charter",
+                "optimal_timing": "Within 7 Days",
+                "strategic_rationale": "Market conditions show stable or negative skewness, making a Spot Voyage Charter the optimal strategy. Current predicted landed costs indicate favorable spot availability for this vessel class. Proceed with spot fixing to capture short-term value."
+            }
+
+    ml_results['ai_advisory'] = ai_advisory_json
     
     origin_lat = 0
     origin_lng = 0
@@ -117,7 +171,7 @@ def api_analyze():
     return jsonify({
         "vessels": results,
         "largest_vessel": largest_vessel['class_name'],
-        "analysis": analysis,
+        "ml_results": ml_results,
         "weather_detour_active": weather_detour_active,
         "max_wave_height": round(max_wave_height, 2) if max_wave_height else 0,
         "cargo_capped": cargo_capped,

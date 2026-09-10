@@ -1,9 +1,14 @@
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
 from flask import Flask
 from model import db
 from blueprints.auth import auth_bp
 from blueprints.home import home_bp
 from blueprints.dashboard import dashboard_bp
-import os
 
 app = Flask(__name__)
 app.secret_key = "antigrav_secret_key"

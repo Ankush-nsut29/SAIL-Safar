@@ -62,7 +62,7 @@ def ensure_dataset_exists(data_path='data/port_congestion_historical.csv'):
 
     df = pd.DataFrame(rows)
     df.to_csv(data_path, index=False)
-    print(f"✓ Port congestion dataset created successfully ({len(df)} records).")
+    print(f"[OK] Port congestion dataset created successfully ({len(df)} records).")
 
 
 class PortPredictor:
@@ -242,7 +242,7 @@ class PortPredictor:
             self.feature_columns[port] = feature_cols
             self.ensemble_weights[port] = {'linear_regression': w_lr, 'xgboost': w_xgb}
 
-            print(f"  ✓ {port:<25} | R²: {metrics_ensemble['r2']:.4f} | RMSE: {metrics_ensemble['rmse_days']:.2f} days | Weights: [LR: {w_lr:.2f}, XGB: {w_xgb:.2f}]")
+            print(f"  [OK] {port:<25} | R²: {metrics_ensemble['r2']:.4f} | RMSE: {metrics_ensemble['rmse_days']:.2f} days | Weights: [LR: {w_lr:.2f}, XGB: {w_xgb:.2f}]")
 
         self.is_trained = True
         return self

@@ -61,9 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 origin_port: document.getElementById('origin_port').value,
                 discharge_port: document.getElementById('discharge_port').value,
                 cargo_volume: parseFloat(document.getElementById('cargo_volume').value),
-                contract_window_days: parseInt(document.getElementById('contract_window_days').value),
-                fuel_price: parseFloat(document.getElementById('fuel_price').value),
-                transit_days: parseFloat(document.getElementById('transit_days').value)
+                contract_window_days: parseInt(document.getElementById('contract_window_days').value)
             };
 
             const btn = this.querySelector('button');
@@ -88,28 +86,36 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
 
-                // Update Recommendation Banner
-                const recBanner = document.getElementById('rec-banner');
-                const recText = document.getElementById('rec-text');
-                recBanner.style.display = 'block';
-                recText.innerText = data.analysis.recommendation;
-                if (data.analysis.decision_type === 'Period Time Charter') {
-                    recBanner.style.backgroundColor = '#d4edda';
-                    recBanner.style.color = '#155724';
-                    recBanner.style.border = '1px solid #c3e6cb';
-                } else {
-                    recBanner.style.backgroundColor = '#cce5ff';
-                    recBanner.style.color = '#004085';
-                    recBanner.style.border = '1px solid #b8daff';
+                // Update AI Advisory Card
+                const aiAdvisoryCard = document.getElementById('ai-advisory-card');
+                if (aiAdvisoryCard && data.ml_results.ai_advisory) {
+                    aiAdvisoryCard.style.display = 'block';
+                    document.getElementById('ai-contract-strategy').innerText = data.ml_results.ai_advisory.recommended_contract || 'N/A';
+                    document.getElementById('ai-optimal-timing').innerText = data.ml_results.ai_advisory.optimal_timing || 'N/A';
+                    document.getElementById('ai-strategic-rationale').innerText = data.ml_results.ai_advisory.strategic_rationale || 'N/A';
                 }
 
                 // Update KPIs
                 document.getElementById('kpi-cards').style.display = 'grid';
-                document.getElementById('kpi-mean').innerText = '$' + data.analysis.stats.mean.toLocaleString();
-                document.getElementById('kpi-variance').innerText = data.analysis.stats.variance.toLocaleString();
-                document.getElementById('kpi-skewness').innerText = data.analysis.stats.skewness;
-                document.getElementById('kpi-kurtosis').innerText = data.analysis.stats.kurtosis;
-                document.getElementById('kpi-landed-cost').innerText = '$' + data.analysis.stats.landed_cost_per_mt + '/MT';
+                document.getElementById('kpi-freight').innerText = '$' + data.ml_results.predicted_freight_rate.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('kpi-cargo').innerText = data.cargo_capped ? data.capped_volume.toLocaleString() : data.original_request.toLocaleString();
+                document.getElementById('kpi-weather').innerText = data.ml_results.weather_delay_days + ' Days';
+                document.getElementById('kpi-total-cost').innerText = '$' + data.ml_results.total_estimated_cost_usd.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                // Update Statistical Cards
+                const mlStatsCards = document.getElementById('ml-stats-cards');
+                if (mlStatsCards) {
+                    mlStatsCards.style.display = 'grid';
+                    document.getElementById('stat-variance').innerText = data.ml_results.variance.toLocaleString(undefined, {maximumFractionDigits: 2});
+                    
+                    const skewness = data.ml_results.skewness;
+                    const skewnessEl = document.getElementById('stat-skewness');
+                    skewnessEl.innerText = skewness > 0 ? `+${skewness.toFixed(2)} (Bullish)` : `${skewness.toFixed(2)} (Bearish)`;
+                    skewnessEl.style.color = skewness > 0 ? '#dc3545' : '#198754'; // Red if going up (expensive), Green if going down (cheap)
+                    
+                    const r2 = data.ml_results.freight.test_metrics.r2;
+                    document.getElementById('stat-r2').innerText = `${(r2 * 100).toFixed(1)}% Accuracy`;
+                }
                 
                 // Update Weather Alert
                 const weatherAlert = document.getElementById('weather-alert');
@@ -152,19 +158,45 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (forecastChart) {
                     forecastChart.destroy();
                 }
+                
+                const histDates = data.ml_results.chart_data.map(d => d.Date);
+                const foreDates = data.ml_results.forecast_data.map(d => d.date);
+                const allDates = [...histDates, ...foreDates];
+
+                const histPrices = data.ml_results.chart_data.map(d => d.Price);
+                
+                const paddedForecast = new Array(histDates.length - 1).fill(null);
+                paddedForecast.push(histPrices[histPrices.length - 1]); // Connect the lines
+                const forePrices = data.ml_results.forecast_data.map(d => d.rate);
+                const fullForecast = [...paddedForecast, ...forePrices];
+                
+                const fullHist = [...histPrices, ...new Array(foreDates.length).fill(null)];
+
                 forecastChart = new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: data.analysis.chart_data.labels,
-                        datasets: [{
-                            label: `Historical Rates (${data.largest_vessel})`,
-                            data: data.analysis.chart_data.values,
-                            borderColor: '#004085',
-                            backgroundColor: 'rgba(0, 64, 133, 0.1)',
-                            borderWidth: 2,
-                            fill: true,
-                            tension: 0.1
-                        }]
+                        labels: allDates,
+                        datasets: [
+                            {
+                                label: `Historical Rates (${data.largest_vessel})`,
+                                data: fullHist,
+                                borderColor: '#004085',
+                                backgroundColor: 'rgba(0, 64, 133, 0.1)',
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.1
+                            },
+                            {
+                                label: `AI Forecast (${data.largest_vessel})`,
+                                data: fullForecast,
+                                borderColor: '#dc3545', // Red line for forecast
+                                backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                                borderDash: [5, 5], // Dashed line to indicate prediction
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.1
+                            }
+                        ]
                     },
                     options: {
                         responsive: true,

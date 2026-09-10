@@ -60,7 +60,7 @@ def ensure_dataset_exists(data_path='data/sail_plant_demand.csv'):
 
     df = pd.DataFrame(rows)
     df.to_csv(data_path, index=False)
-    print(f"✓ SAIL plant demand dataset created successfully ({len(df)} records).")
+    print(f"[OK] SAIL plant demand dataset created successfully ({len(df)} records).")
 
 
 class DemandPredictor:
@@ -215,7 +215,7 @@ class DemandPredictor:
             self.feature_columns[key] = feature_cols
             self.ensemble_weights[key] = {'linear_regression': w_lr, 'xgboost': w_xgb}
 
-            print(f"  ✓ {key:<35} | R²: {metrics_ensemble['r2']:.4f} | MAPE: {metrics_ensemble['mape_percent']:.2f}% | Weights: [LR: {w_lr:.2f}, XGB: {w_xgb:.2f}]")
+            print(f"  [OK] {key:<35} | R²: {metrics_ensemble['r2']:.4f} | MAPE: {metrics_ensemble['mape_percent']:.2f}% | Weights: [LR: {w_lr:.2f}, XGB: {w_xgb:.2f}]")
 
         self.is_trained = True
         return self
@@ -261,10 +261,10 @@ class DemandPredictor:
         w_lr = self.ensemble_weights[key]['linear_regression']
         w_xgb = self.ensemble_weights[key]['xgboost']
 
-        predicted_weekly_mt = max(1000.0, (w_lr * pred_lr) + (w_xgb * pred_xgb))
+        predicted_weekly_demand_mt = max(1000.0, (w_lr * pred_lr) + (w_xgb * pred_xgb))
 
         # Scale predicted weekly demand to contract window (30/60/90 days)
-        total_window_demand_mt = predicted_weekly_mt * (float(contract_days) / 7.0)
+        total_window_demand_mt = predicted_weekly_demand_mt * (float(contract_days) / 7.0)
 
         # Determine Demand Outlook Indicator
         if month in [10, 11, 12, 1, 2]:

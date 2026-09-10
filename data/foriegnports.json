@@ -64,7 +64,8 @@
             "max_draft_meters": 19.0,
             "max_loa_meters": 320,
             "allowed_vessel_classes": [
-                "Capesize"
+                "Capesize",
+                "Panamax"
             ],
             "notes": "Deepest northern export terminal handling ultra-large bulk carriers.",
             "_source_link": "https://nqbp.com.au"
