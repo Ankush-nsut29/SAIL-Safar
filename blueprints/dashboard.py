@@ -37,12 +37,11 @@ def api_analyze():
     if 'user_id' not in session:
         return jsonify({"error": "Your session has expired. Please log in again."}), 401
         
-    try:
-        data = request.json or {}
-        origin_port = data.get('origin_port')
-        discharge_port = data.get('discharge_port')
-        cargo_volume = data.get('cargo_volume') or 0
-        contract_window_days = data.get('contract_window_days') or 30
+    data = request.json or {}
+    origin_port = data.get('origin_port')
+    discharge_port = data.get('discharge_port')
+    cargo_volume = data.get('cargo_volume') or 0
+    contract_window_days = data.get('contract_window_days') or 30
     
     vessels_data = get_vessels()
     foreign_ports_data = get_foreign_ports()
@@ -178,22 +177,18 @@ def api_analyze():
             discharge_lng = port.get('lng', 0)
             break
             
-        return jsonify({
-            "vessels": results,
-            "largest_vessel": largest_vessel['class_name'],
-            "ml_results": ml_results,
-            "weather_detour_active": weather_detour_active,
-            "max_wave_height": round(max_wave_height, 2) if max_wave_height else 0,
-            "cargo_capped": cargo_capped,
-            "original_request": original_request,
-            "capped_volume": capped_volume,
-            "route_coordinates": {
-                "origin": [origin_lat, origin_lng],
-                "discharge": [discharge_lat, discharge_lng]
-            }
-        })
-    except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({"error": f"Server Error: {str(e)}"}), 500
+    return jsonify({
+        "vessels": results,
+        "largest_vessel": largest_vessel['class_name'],
+        "ml_results": ml_results,
+        "weather_detour_active": weather_detour_active,
+        "max_wave_height": round(max_wave_height, 2) if max_wave_height else 0,
+        "cargo_capped": cargo_capped,
+        "original_request": original_request,
+        "capped_volume": capped_volume,
+        "route_coordinates": {
+            "origin": [origin_lat, origin_lng],
+            "discharge": [discharge_lat, discharge_lng]
+        }
+    })
 
