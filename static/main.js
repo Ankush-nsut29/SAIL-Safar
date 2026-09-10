@@ -249,8 +249,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             })
             .catch(err => {
-                console.error(err);
-                alert("An error occurred during analysis.");
+                console.error("Fetch error details:", err);
+                alert("Analysis failed: " + (err.message || err));
                 btn.innerText = originalText;
                 btn.disabled = false;
             });
