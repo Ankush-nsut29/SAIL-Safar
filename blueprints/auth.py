@@ -6,6 +6,9 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
+    if request.method == 'GET':
+        flash('Demo Accounts: bhilai@sail.in, bokaro@sail.in, rourkela@sail.in, durgapur@sail.in | Password: 123', 'info')
+
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
