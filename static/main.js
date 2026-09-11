@@ -155,48 +155,101 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Update Chart
                 document.getElementById('chart-container').style.display = 'block';
                 const ctx = document.getElementById('forecastChart').getContext('2d');
-                if (forecastChart) {
-                    forecastChart.destroy();
+                
+                if (forecastChart !== null) {
+                    try {
+                        forecastChart.destroy();
+                    } catch(e) {
+                        console.error('Error destroying chart:', e);
+                    }
                 }
                 
-                const histDates = data.ml_results.chart_data.map(d => d.Date);
-                const foreDates = data.ml_results.forecast_data.map(d => d.date);
+                // Base colors for different vessels
+                const colors = ['#004085', '#28a745', '#17a2b8', '#ffc107', '#6f42c1', '#e83e8c'];
+                
+                // Use the first vessel to get all labels
+                const baseData = data.all_vessels_chart_data && data.all_vessels_chart_data.length > 0 
+                                  ? data.all_vessels_chart_data[0] 
+                                  : { chart_data: data.ml_results.chart_data, forecast_data: data.ml_results.forecast_data };
+                
+                const histDates = baseData.chart_data.map(d => d.Date);
+                const foreDates = baseData.forecast_data.map(d => d.date);
                 const allDates = [...histDates, ...foreDates];
 
-                const histPrices = data.ml_results.chart_data.map(d => d.Price);
+                let datasets = [];
                 
-                const paddedForecast = new Array(histDates.length - 1).fill(null);
-                paddedForecast.push(histPrices[histPrices.length - 1]); // Connect the lines
-                const forePrices = data.ml_results.forecast_data.map(d => d.rate);
-                const fullForecast = [...paddedForecast, ...forePrices];
-                
-                const fullHist = [...histPrices, ...new Array(foreDates.length).fill(null)];
+                if (data.all_vessels_chart_data && data.all_vessels_chart_data.length > 0) {
+                    data.all_vessels_chart_data.forEach((vData, idx) => {
+                        const color = colors[idx % colors.length];
+                        
+                        const histPrices = vData.chart_data.map(d => d.Price);
+                        const forePrices = vData.forecast_data.map(d => d.rate);
+                        
+                        const paddedForecast = new Array(histDates.length - 1).fill(null);
+                        if (histPrices.length > 0) {
+                            paddedForecast.push(histPrices[histPrices.length - 1]);
+                        }
+                        const fullForecast = [...paddedForecast, ...forePrices];
+                        const fullHist = [...histPrices, ...new Array(foreDates.length).fill(null)];
+                        
+                        // Set borderDash logic for forecast
+                        datasets.push({
+                            label: `Hist Rates (${vData.vessel_class})`,
+                            data: fullHist,
+                            borderColor: color,
+                            backgroundColor: color.replace(')', ', 0.1)').replace('rgb', 'rgba'), // Approximation, usually better to let Chart.js handle transparent colors or use solid
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.1
+                        });
+                        
+                        datasets.push({
+                            label: `AI Forecast (${vData.vessel_class})`,
+                            data: fullForecast,
+                            borderColor: '#dc3545', // Red line for forecast, or use color
+                            backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                            borderDash: [5, 5],
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.1
+                        });
+                    });
+                } else {
+                    // Fallback to single largest vessel
+                    const histPrices = data.ml_results.chart_data.map(d => d.Price);
+                    const paddedForecast = new Array(histDates.length - 1).fill(null);
+                    paddedForecast.push(histPrices[histPrices.length - 1]); // Connect the lines
+                    const forePrices = data.ml_results.forecast_data.map(d => d.rate);
+                    const fullForecast = [...paddedForecast, ...forePrices];
+                    const fullHist = [...histPrices, ...new Array(foreDates.length).fill(null)];
+
+                    datasets.push({
+                        label: `Historical Rates (${data.largest_vessel})`,
+                        data: fullHist,
+                        borderColor: '#004085',
+                        backgroundColor: 'rgba(0, 64, 133, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.1
+                    });
+                    
+                    datasets.push({
+                        label: `AI Forecast (${data.largest_vessel})`,
+                        data: fullForecast,
+                        borderColor: '#dc3545',
+                        backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                        borderDash: [5, 5],
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.1
+                    });
+                }
 
                 forecastChart = new Chart(ctx, {
                     type: 'line',
                     data: {
                         labels: allDates,
-                        datasets: [
-                            {
-                                label: `Historical Rates (${data.largest_vessel})`,
-                                data: fullHist,
-                                borderColor: '#004085',
-                                backgroundColor: 'rgba(0, 64, 133, 0.1)',
-                                borderWidth: 2,
-                                fill: true,
-                                tension: 0.1
-                            },
-                            {
-                                label: `AI Forecast (${data.largest_vessel})`,
-                                data: fullForecast,
-                                borderColor: '#dc3545', // Red line for forecast
-                                backgroundColor: 'rgba(220, 53, 69, 0.1)',
-                                borderDash: [5, 5], // Dashed line to indicate prediction
-                                borderWidth: 2,
-                                fill: true,
-                                tension: 0.1
-                            }
-                        ]
+                        datasets: datasets
                     },
                     options: {
                         responsive: true,

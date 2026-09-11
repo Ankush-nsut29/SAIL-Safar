@@ -114,6 +114,19 @@ def api_analyze():
     
     ml_results = run_voyage_simulation(voyage_data)
     
+    from services.calculator import freight_pred
+    all_vessels_chart_data = []
+    for v in results:
+        if v['status'] in ['Feasible', 'Draft Exceeded - Capped Payload'] or 'Capped' in v['status']:
+            v_class = v['class_name']
+            stats_v = freight_pred.get_stats(vessel_class=v_class, window=contract_window_days)
+            fore_v = freight_pred.forecast_series(vessel_class=v_class, days=contract_window_days)
+            all_vessels_chart_data.append({
+                'vessel_class': v_class,
+                'chart_data': stats_v['chart_data'],
+                'forecast_data': fore_v
+            })
+    
     prompt_payload = f"""
     Voyage Data:
     - Route: {origin_port} to {discharge_port}
@@ -186,6 +199,7 @@ def api_analyze():
         "cargo_capped": cargo_capped,
         "original_request": original_request,
         "capped_volume": capped_volume,
+        "all_vessels_chart_data": all_vessels_chart_data,
         "route_coordinates": {
             "origin": [origin_lat, origin_lng],
             "discharge": [discharge_lat, discharge_lng]
